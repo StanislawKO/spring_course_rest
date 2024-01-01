@@ -1,12 +1,9 @@
 package com.staskozh.spring.rest.controller;
 
 import com.staskozh.spring.rest.entity.Employee;
-import com.staskozh.spring.rest.exception_handling.EmployeeIncorrectData;
 import com.staskozh.spring.rest.exception_handling.NoSuchEmployeeException;
 import com.staskozh.spring.rest.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,19 +32,28 @@ public class MyRESTController {
         return employee;
     }
 
-    @ExceptionHandler
-    public ResponseEntity<EmployeeIncorrectData> handleException(NoSuchEmployeeException exception) {
-        EmployeeIncorrectData data = new EmployeeIncorrectData();
-        data.setInfo(exception.getMessage());
+    @PostMapping("/employees")
+    public Employee addNewEmployee(@RequestBody Employee employee) {
 
-        return new ResponseEntity<>(data, HttpStatus.NOT_FOUND);
+        employeeService.saveEmployee(employee);
+        return employee;
     }
 
-    @ExceptionHandler
-    public ResponseEntity<EmployeeIncorrectData> handleException(Exception exception) {
-        EmployeeIncorrectData data = new EmployeeIncorrectData();
-        data.setInfo(exception.getMessage());
+    @PutMapping("/employees")
+    public Employee updateEmployee(@RequestBody Employee employee) {
 
-        return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+        employeeService.saveEmployee(employee);
+        return employee;
+    }
+
+    @DeleteMapping("/employees/{id}")
+    public String deleteEmployee(@PathVariable int id) {
+        Employee employee = employeeService.getEmployee(id);
+        if (employee == null) {
+            throw new NoSuchEmployeeException("There is no employee with ID = " + id + " in Database");
+        }
+
+        employeeService.deleteEmployee(id);
+        return "Employee with ID = " + id + " was deleted";
     }
 }
